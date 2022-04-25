@@ -45,6 +45,20 @@ Function Get-ValueOfViolations ([int[]] $ticket) {
     return $sum
 }
 
+Function Get-Fields ([int[][]] $tickets = $global:validTickets) {
+    $fields = New-Object string[] $tickets[0].Length
+    $fieldList = [string[]]$global:rules.Keys
+    for ($i = 0; $i -lt $fieldList.Length; $i++) {
+        $rule = $rules[$fieldList[$i]]
+        $ticket | ForEach-Object {
+            if (!(FulfillsRule -rule $rule -value $_)) {
+
+            }
+        }
+    }
+    return $fields
+}
+
 Function Get-Result ([string] $dataName = ".\Data.txt") {
     [string[]] $data = Get-Content $dataName
     $global:validTickets = @()
@@ -60,5 +74,5 @@ Function Get-Result ([string] $dataName = ".\Data.txt") {
     if ($part -eq 1) {
         return $sum
     }
-
+    $global:fields = Get-Fields
 }
