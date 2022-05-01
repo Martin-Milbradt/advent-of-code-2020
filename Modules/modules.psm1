@@ -109,6 +109,9 @@ Function Get-Occurences {
     return $text.Split($character).Length - 1
 }
 
+Function Flatten ($object) {
+    return @($object | ForEach-Object {$_})
+}
 
 Function Get-OccurencesArray {
     param(
@@ -157,3 +160,4 @@ Export-ModuleMember -Function Get-OccurencesArray
 Export-ModuleMember -Function Get-Product
 Export-ModuleMember -Function Get-Sum
 Export-ModuleMember -Function Assert-Equals
+Export-ModuleMember -Function Flatten

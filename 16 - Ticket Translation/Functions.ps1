@@ -70,26 +70,82 @@ Function TicketsFulfillRule ([int[][]] $tickets, [int] $index, [int[]] $rule) {
     return $true
 }
 
-Function Get-Fields ($possibleFields) {
-    $count = $possibleFields.Count
-    $fields = New-Object String[] $count
-    for ($found = 0; $found -lt $count; $found++) {
-        for ($i = 0; $i -lt $count; $i++) {
-            if($possibleFields[$i].Count -eq 1) {
-                $result = $possibleFields[$i]
-                $fields[$i] = $result
-                for ($j = 0; $j -lt $count; $j++) {
-                    $possibleFields[$j].Remove($fields[$i])
-                }
-                break;
-            }
-        }
+Function Remove-Fields ($fields, [string] $name) {
+    foreach ($field in $fields) {
+        $null = $field.Remove($name)
     }
     return $fields
 }
 
-Function Get-Part1 ([string] $dataName = ".\Data.txt") {
+Function Get-Fields ($possibleFields, [string[]] $fields = $null) {
+    $count = $possibleFields.Count
+    if ($null -eq $fields) {
+        $foundCount = 0
+        $fields = New-Object String[] $count
+    } else {
+        $foundCount = $($fields | Where-Object {$null -ne $_}).count
+    }
+    while ($true) {
+        $foundCountOld = $foundCount
+        do {
+            $found = $false
+            for ($i = 0; $i -lt $count; $i++) {
+                # no option
+                if($possibleFields[$i].Count -eq 0 -and $null -eq $fields[$i]) {
+                    return $false
+                }
+                # only option
+                if($possibleFields[$i].Count -eq 1) {
+                    $foundCount++
+                    $found = $true
+                    $fields[$i] = $possibleFields[$i]
+                    $possibleFields = Remove-Fields -fields $possibleFields -name $possibleFields[$i]
+                }
+            }
+        } While ($found -eq $true)
+        do {
+            $found = $false
+            $occurences = $(Flatten -object $possibleFields)
+            $grouped = $occurences | Group-Object | Sort-Object -Property Count
+            if ($grouped.Count -eq 0) {
+                return $fields
+            }
+            # only occurence of name
+            for ($i = 0; $grouped[$i].Count -eq 1; $i++) {
+                $found = $true
+                $foundCount++
+                for ($j = 0; $j -lt $count; $j++) {
+                    $name = $grouped[$i].Name
+                    if ($possibleFields[$j] -eq $name) {
+                        $fields[$j] = $name
+                        $possibleFields[$j] = New-Object Collections.Generic.List[String]
+                        break
+                    }
+                }
+            }
+        } while ($found -eq $true)
+        # nothing found: guess / eliminate
+        if ($foundCountOld -eq $foundCount) {
+            $possibleFieldsCandidate = $possibleFields
+            $name = $grouped[0].Name
+            for ($j = 0; $j -lt $count; $j++) {
+                if ($possibleFieldsCandidate[$j].Contains($name)) {
+                    $possibleFieldsCandidate[$j] = New-Object Collections.Generic.List[String]
+                    $possibleFieldsCandidate[$j].Add($name)
+                    break
+                }
+            }
+            $fieldsCandidate = Get-Fields -possibleFields $possibleFieldsCandidate -fields $fields
+            if ($possibleFieldsCandidate -eq $false) {
+                $possibleFields[$j].Remove($name)
+            } else {
+                return $fieldsCandidate
+            }
+        }
+    }
+}
 
+Function Get-Part1 ([string] $dataName = ".\Data.txt") {
     [string[]] $data = Get-Content $dataName
     $global:rules, $myTicket, $nearbyTickets = Parse -data $data
     $sum = 0
@@ -103,7 +159,14 @@ Function Get-Part2 ([string] $dataName = ".\ValidTickets.txt") {
     [string[]] $data = Get-Content $dataName
     $global:rules, $myTicket, $validTickets = Parse -data $data
     $possibleFields = Get-PossibleFields -tickets $validTickets
-    return Get-Fields -possibleFields $possibleFields
+    $fields = Get-Fields -possibleFields $possibleFields
+    $prod = 1;
+    for ($i = 0; $i -lt $fields.Count; $i++) {
+        if ($fields[$i].StartsWith("departure")) {
+            $prod *= $myTicket[$i]
+        }
+    }
+    return $prod
 }
 
 Function Get-Result ([string] $dataName, [int] $part = $global:part) {
