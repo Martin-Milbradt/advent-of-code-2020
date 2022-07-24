@@ -10,7 +10,7 @@ $data = Add-PaddingToArray $data
 
 Function Loop ([string] $function, [int] $iterations = 100) {
     for ($i = 0; $i -lt $iterations; $i++) {    
-        [string[]] $newData = & $function $data
+        & $function $data
     }
 }
 
