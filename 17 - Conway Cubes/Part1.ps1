@@ -3,4 +3,4 @@
 
 $global:part = 1
 
-Write-Host $(Get-Result)
+Get-Result ".\Data.txt"
