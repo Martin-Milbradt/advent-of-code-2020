@@ -1,6 +1,8 @@
-﻿[int[]] $data = Get-Content .\Data.txt 
+﻿Push-Location $PSScriptRoot
+[int[]] $data = Get-Content .\Data.txt
 $data = $data | sort
 
+Write-Output $(Calculate -target 2020 -numbers $data)
 Write-Output $(Calculate-Recursion -target 2020 -numbers $data)
 
 Function Calculate-Recursion([int] $target, [int[]] $numbers) {
@@ -9,7 +11,7 @@ Function Calculate-Recursion([int] $target, [int[]] $numbers) {
         $result = Calculate -target $($target - $number) -numbers $numbersWithoutNumber
         if ($result -gt -1) {
             return $result * $number
-        } 
+        }
     }
 }
 
