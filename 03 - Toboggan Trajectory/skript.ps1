@@ -1,6 +1,6 @@
 ﻿Push-Location $PSScriptRoot
 
-$data = Get-Content .\Data.txt 
+$data = Get-Content .\Data.txt
 
 $length = $data[0].Trim().Length
 $heigth = $data.Length
@@ -17,7 +17,7 @@ Function Move-Pos([int] $right, [int] $down) {
 
 Function Plot-Pos() {
     $lineData = $data[$line]
-    return $lineData.remove($row,1).insert($row,"X")
+    return $lineData.remove($row, 1).insert($row, "X")
 }
 
 Function Traverse-Slope ([int] $right, [int] $down) {
@@ -46,4 +46,5 @@ foreach ($p in $trees) {
     $product *= $p
 }
 
+Write-Host $(Traverse-Slope -right 3 -down 1)
 Write-Host $product

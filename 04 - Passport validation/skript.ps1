@@ -16,7 +16,7 @@ Function Validate-Date([string] $field, [int] $min, [int] $max) {
             return $true
         }
         else {
-            $global:OoR += "Year " + $field + ":" + $yr + " out of range " + $min + "-" + $max +" in line " + $line + "`n"
+            $global:OoR += "Year " + $field + ":" + $yr + " out of range " + $min + "-" + $max + " in line " + $line + "`n"
             return $false
         }
     }
@@ -51,8 +51,7 @@ Function Validation-Eyr([string] $line) {
 }
 
 Function Validation-Hgt([string] $line) {
-    if ($(Validate-Height -unit "cm" -min 150 -max 193) -or $(Validate-Height -unit "in" -min 59 -max 76))
-    {
+    if ($(Validate-Height -unit "cm" -min 150 -max 193) -or $(Validate-Height -unit "in" -min 59 -max 76)) {
         return $true
     }
     return $false
@@ -69,8 +68,8 @@ Function Validation-Hcl([string] $line) {
 Function Validation-Ecl([string] $line) {
     if ($line -match 'ecl:([a-z]{3}) ') {
         $ecl = $Matches[1]
-        ForEach($cl in $ecls) {
-            if($ecl -eq $cl) {
+        ForEach ($cl in $ecls) {
+            if ($ecl -eq $cl) {
                 return $true
             }
         }
@@ -90,7 +89,7 @@ Function Validation-Pid([string] $line) {
 }
 
 Function Parse-Data {
-    $newData = ,""
+    $newData = , ""
     foreach ($line in $data) {
         if ($line -eq "") {
             $newData += ""
@@ -103,8 +102,7 @@ Function Parse-Data {
 }
 
 Function Check-Contains([string] $line) {
-    foreach ($field in $fields)
-    {
+    foreach ($field in $fields) {
         if ($line -notmatch $field) {
             return $false
         }
@@ -112,12 +110,14 @@ Function Check-Contains([string] $line) {
     return $true
 }
 
-Function Check-Line([string] $line) {
+Function Check-Line([string] $line, [int] $part = 1) {
     if (-not (Check-Contains -line $line)) {
         return $false
     }
-    foreach ($func in $validations)
-    {
+    if ($part -eq 1) {
+        return $true
+    }
+    foreach ($func in $validations) {
         if (-not(& $func -line $line)) {
             return $false
         }
@@ -125,11 +125,11 @@ Function Check-Line([string] $line) {
     return $true
 }
 
-Function Check-Data {
+Function Check-Data([int] $part = 1) {
     $valid = 0
     foreach ($line in $data) {
-        
-        if (Check-Line -line $line) {
+
+        if (Check-Line -line $line -part $part) {
             $valid ++
         }
     }
@@ -139,5 +139,6 @@ Function Check-Data {
 $data = Parse-Data
 
 Write-Host $(Check-Data)
-$OoR
-$NaN
+Write-Host $(Check-Data -part 2)
+# $OoR
+# $NaN

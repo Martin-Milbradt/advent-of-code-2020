@@ -1,7 +1,7 @@
 ﻿Push-Location $PSScriptRoot
 $ParentFolder = (get-item $PSScriptRoot).parent.FullName
 Import-Module -name "$ParentFolder\Modules\modules.psm1" -Verbose -Force
- 
+
 $data = Get-Content .\Data.txt
 $target = "shiny gold"
 $testdata = Get-Content .\Testdata.txt
@@ -24,10 +24,10 @@ Function Initialize-Rules ([string[]] $data) {
 }
 
 Function Remove-UnneccesaryInformation ([string] $line) {
-    $line = $line -replace ' ?[,.] ?',' '
-    $line = $line -replace ' ?[0-9] ?',' '
-    $line = $line -replace ' ?bags? ?',' '
-    $line = $line -replace ' ?contain ?',' '
+    $line = $line -replace ' ?[,.] ?', ' '
+    $line = $line -replace ' ?[0-9] ?', ' '
+    $line = $line -replace ' ?bags? ?', ' '
+    $line = $line -replace ' ?contain ?', ' '
     $line = $line.trim()
     return $line
 }
@@ -36,14 +36,14 @@ Function New-ColorArray ([string] $line) {
     $line = Remove-UnneccesaryInformation -line $line
     $array = $line -split " "
     $colorArray = @()
-    for ($i = 0; $i -lt $array.Length-1; $i += 2) {
-        $colorArray += $array[$i] + " " + $array[$i+1]
+    for ($i = 0; $i -lt $array.Length - 1; $i += 2) {
+        $colorArray += $array[$i] + " " + $array[$i + 1]
     }
     return $colorArray
 }
 
 Function InnerContains ([string[]] $array, [string] $target = $global:target) {
-    return $array[1..$($array.Length-1)] -contains $target
+    return $array[1..$($array.Length - 1)] -contains $target
 }
 
 Function Get-BagsContainingTarget {
@@ -83,11 +83,11 @@ Function Rename-Bags ([string[]] $colors) {
 }
 
 Function Rename-BagsSingleColor ([string] $color, [string] $target = $global:target) {
-    for ($i=0; $i -lt $global:rules.Length; $i++) {
+    for ($i = 0; $i -lt $global:rules.Length; $i++) {
         $global:rules[$i] = $global:rules[$i] -replace $color, $target
     }
 }
 
-$rules = Initialize-Rules -data $testdata
+$rules = Initialize-Rules -data $data
 
 Write-Output "Bags that can contain a $target bag: $(Get-BagsContainingTarget)"

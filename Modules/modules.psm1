@@ -3,10 +3,10 @@
         [string[]] $data
     )
 
-    $newData = ,""
+    $newData = , ""
     foreach ($line in $data) {
         if ($line -eq "") {
-            $newData[-1] =  $newData[-1].Trim()
+            $newData[-1] = $newData[-1].Trim()
             $newData += ""
         }
         else {
@@ -22,17 +22,22 @@ Function Get-ContentAsMatrix {
         [string] $path
     )
     $data = Get-Content $path
-    return Convert-ToMatrix -data $data
+    $matrix = Convert-ToMatrix -data $data
+    return $matrix
 }
 
 Function Convert-ToMatrix {
     param(
         [object[]] $data
     )
-    for ($i = 0; $i -lt $data.Count; $i++) {
-        $data[$i] = $data[$i].Split(" ")
+    $matrix = @()
+    foreach ($line in $data) {
+        if ($line) {
+            $row = $line.Split(" ")
+            $matrix += , $row # The comma is used to add the array as a single element
+        }
     }
-    return $data
+    return $matrix
 }
 
 Function Out-WithLinebreaks {
@@ -49,14 +54,14 @@ Function Test-SumOfTwo ([int] $target, [int[]] $numbers) {
     foreach ($number in $numbers) {
         for ($i = $initialI; $i -gt ($numbers.Length * -1); $i--) {
             switch ($number + $numbers[$i]) {
-                {$_ -gt $target} {
+                { $_ -gt $target } {
                     $initialI--
                     continue
                 }
                 $target {
                     return $true
                 }
-                default{break}
+                default { break }
             }
         }
     }
@@ -67,23 +72,23 @@ Function Add-PaddingToMatrix {
     param(
         [object[][]] $data
     )
-    for ($i=0; $i -lt $data.Length; $i++) {
-        $data[$i] = ,$null + $data[$i] + $null
+    for ($i = 0; $i -lt $data.Length; $i++) {
+        $data[$i] = , $null + $data[$i] + $null
     }
     [Char[]] $paddingLine = New-Object object[] $data[0].Length
-    $data = ,$paddingLine + $data
-    return $data + ,$paddingLine
+    $data = , $paddingLine + $data
+    return $data + , $paddingLine
 }
 
 Function Add-PaddingToArray {
     param(
         [string[]] $data
     )
-    for ($i=0; $i -lt $data.Length; $i++) {
+    for ($i = 0; $i -lt $data.Length; $i++) {
         $data[$i] = " $($data[$i]) "
     }
     $paddingLine = " " * $data[0].Length
-    return ,$paddingLine + $data + $paddingLine
+    return , $paddingLine + $data + $paddingLine
 }
 
 Function Get-Deepcopy {
@@ -110,7 +115,7 @@ Function Get-Occurences {
 }
 
 Function Flatten ($object) {
-    return @($object | ForEach-Object {$_})
+    return @($object | ForEach-Object { $_ })
 }
 
 Function Get-OccurencesArray {

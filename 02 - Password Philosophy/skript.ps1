@@ -1,11 +1,21 @@
 ﻿Push-Location $PSScriptRoot
 
-$data = Get-Content .\Data.txt 
+$data = Get-Content .\Data.txt
 
 Function ParseAll() {
     $valid = 0
     foreach ($pw in $data) {
         if (IsValid -pw $pw) {
+            $valid++
+        }
+    }
+    return $valid
+}
+
+Function ParseAll1() {
+    $valid = 0
+    foreach ($pw in $data) {
+        if (IsValid1 -pw $pw) {
             $valid++
         }
     }
@@ -18,9 +28,14 @@ Function IsValid([string] $pwString) {
     #return OccurenceValidation -min $pwArr[0] -max $pwArr[1] -char $pwArr[2] -pw $pwArr[4]
 }
 
+Function IsValid1([string] $pwString) {
+    $pwArr = $pwString.Split("-").Split(" ").Split(":")
+    return OccurenceValidation -min $pwArr[0] -max $pwArr[1] -char $pwArr[2] -pw $pwArr[4]
+}
+
 Function PlaceValidation([int] $first, [int] $second, [string] $char, [string] $pw) {
-    $eqFirst = $pw.Substring($first-1, 1) -eq $char
-    $eqSecond = $pw.Substring($second-1, 1) -eq $char
+    $eqFirst = $pw.Substring($first - 1, 1) -eq $char
+    $eqSecond = $pw.Substring($second - 1, 1) -eq $char
     if ($eqFirst -xor $eqSecond) {
         $isValid = $true
     }
@@ -39,6 +54,7 @@ Function Occurences([string] $text, [string] $char) {
     return $text.Split($char).Length - 1
 }
 
+Write-Output $(ParseAll1)
 Write-Output $(ParseAll)
 
 

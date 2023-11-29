@@ -8,7 +8,7 @@ Function Get-SeatId([string] $line) {
     $id = 0
     for ($i = 0; $i -lt $length; $i++) {
         if ($line[$i] -eq "R" -or $line[$i] -eq "B") {
-            $id +=  [math]::Pow(2,$length-$i-1) 
+            $id += [math]::Pow(2, $length - $i - 1)
         }
     }
     return $id
@@ -18,7 +18,7 @@ Function Get-MaxSeatId {
     $max = 0
     foreach ($line in $data) {
         $id = Get-SeatId -line $line
-        if($id -gt $max) {
+        if ($id -gt $max) {
             $max = $id
             $global:maxLine = $line
         }
@@ -43,5 +43,6 @@ Function Find-Missing([int[]] $array) {
     }
 }
 
+Write-Host $(Get-MaxSeatId)
 $ids = Get-Ids
 Write-Host $(Find-Missing -array $ids)
