@@ -1,0 +1,1 @@
+departure station,class,route,arrival location,departure location,arrival platform,price,departure date,seat,wagon,departure time,arrival station,row,arrival track,duration,zone,departure platform,train,type,departure track
